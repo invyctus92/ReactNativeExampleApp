@@ -15,30 +15,61 @@ import {
   View,
   Text,
   StatusBar,
+  TouchableOpacity,
 } from 'react-native';
+import {connect} from 'react-redux';
 
 class HomeScreen extends React.Component {
   render() {
+    const isNotConnected = !this.props.isConnected;
     return (
-      <View style={styles.body}>
+      <View
+        style={[
+          styles.body,
+          {backgroundColor: isNotConnected ? 'red' : 'white'},
+        ]}>
         <StatusBar barStyle="dark-content" />
-        <SafeAreaView>
-          <ScrollView
-            contentInsetAdjustmentBehavior="automatic"
-            style={styles.scrollView}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>
-                Set the repository address
-              </Text>
-              <Text style={styles.sectionDescription}>github.com</Text>
+        <SafeAreaView style={styles.ScreenView}>
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Set the repository address</Text>
+            <Text style={styles.sectionDescription}>github.com</Text>
+            <TouchableOpacity
+              onPress={() =>
+                this.props.navigation.navigate('InputScreen', {
+                  typeInput: 'user',
+                })
+              }>
               <Text style={styles.sectionDescription}>
-                /{this.props.user ? this.props.user : 'user'}
+                /{this.props.userRepo ? this.props.userRepo : 'user'}
               </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() =>
+                this.props.navigation.navigate('InputScreen', {
+                  typeInput: 'repo',
+                })
+              }>
               <Text style={styles.sectionDescription}>
-                /{this.props.repo ? this.props.repo : 'repo'}
+                /{this.props.nameRepo ? this.props.nameRepo : 'repo'}
               </Text>
-            </View>
-          </ScrollView>
+            </TouchableOpacity>
+            {isNotConnected ? (
+              <Text style={styles.paddingText}>
+                <Text style={styles.internetDescription}>Check your </Text>
+                <Text style={styles.internetBoldDescription}>
+                  internet connection
+                </Text>
+              </Text>
+            ) : (
+              <></>
+            )}
+          </View>
+          <View style={styles.sectionRightContainer}>
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate('InputScreen')}>
+              <Text style={styles.sectionDescription}>CHECK</Text>
+            </TouchableOpacity>
+          </View>
         </SafeAreaView>
       </View>
     );
@@ -46,20 +77,29 @@ class HomeScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
+  ScreenView: {
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignContent: 'center',
   },
   engine: {
     position: 'absolute',
     right: 0,
   },
   body: {
-    backgroundColor: 'blue',
+    backgroundColor: 'white',
   },
   sectionContainer: {
     marginTop: 32,
     paddingHorizontal: 24,
+  },
+  sectionRightContainer: {
+    marginTop: 32,
+    paddingHorizontal: 24,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
   sectionTitle: {
     fontSize: 24,
@@ -70,6 +110,21 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 18,
     fontWeight: '400',
+    color: 'black',
+  },
+  paddingText: {
+    marginTop: 8,
+  },
+  internetDescription: {
+    marginTop: 8,
+    fontSize: 18,
+    fontWeight: '400',
+    color: 'black',
+  },
+  internetBoldDescription: {
+    marginTop: 8,
+    fontSize: 18,
+    fontWeight: '800',
     color: 'black',
   },
   highlight: {
@@ -85,4 +140,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+const repoState = connect(state => {
+  return {
+    userRepo: state.repoState.userRepo,
+    nameRepo: state.repoState.nameRepo,
+    statusRequest: state.repoState.statusRequest,
+    isConnected: state.connectState.isConnected,
+  };
+});
+
+export default repoState(HomeScreen);

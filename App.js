@@ -8,36 +8,58 @@
 
 import React, {Fragment} from 'react';
 import {Provider} from 'react-redux';
-import {store, persistor} from './store';
+import {store} from './store';
 
-import {PersistGate} from 'redux-persist/integration/react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import HomeScreen from './src/screen/HomeScreen';
+import InputScreen from './src/screen/InputScreen';
+
+import NetInfo from '@react-native-community/netinfo';
+import {changeConnectionStatus} from './src/domains/connection/ActionCreators';
 
 const Stack = createStackNavigator();
-
+let unsubscribe = () => {};
 export default class App extends React.Component {
   constructor(props) {
     super(props);
   }
 
+  handleChange(isConnected) {
+    store.dispatch(changeConnectionStatus(isConnected));
+  }
+
   componentDidMount() {
-    // do stuff while splash screen is shown
-    // After having done stuff (such as async tasks) hide the splash screen
-    // SplashScreen.hide();
+    unsubscribe = NetInfo.addEventListener(state => {
+      this.handleChange(state);
+    });
+  }
+
+  componentWillUnmount() {
+    unsubscribe();
   }
 
   render() {
     return (
       <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen name="Home" component={HomeScreen} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </PersistGate>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen
+              name="Home"
+              component={HomeScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="InputScreen"
+              component={InputScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
       </Provider>
     );
   }

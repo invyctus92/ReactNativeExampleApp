@@ -1,5 +1,6 @@
 import {createStore, compose, applyMiddleware, combineReducers} from 'redux';
-import {repoReducer} from './domains/search/Reducers.js';
+import {repoReducer} from './src/domains/repo/Reducers';
+import {connectionReducer} from './src/domains/connection/Reducers';
 
 import thunk from 'redux-thunk';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -17,19 +18,22 @@ const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
   whitelist: ['repoState'],
-  // stateReconciler: hardSet
 };
 
 const persistedReducer = persistCombineReducers(persistConfig, {
   repoState: repoReducer,
+  connectState: connectionReducer,
 });
-
-const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(
   persistedReducer,
-  composeEnhancer(applyMiddleware(thunk)),
+  compose(
+    applyMiddleware(thunk),
+    window.__REDUX_DEVTOOLS_EXTENSION__ &&
+      window.__REDUX_DEVTOOLS_EXTENSION__(),
+  ),
 );
+
 const persistor = persistStore(store, null, () => {
   store.getState();
 });
