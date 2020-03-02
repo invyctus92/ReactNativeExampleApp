@@ -18,15 +18,48 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {connect} from 'react-redux';
+import {postRepo} from '../domains/repo/ActionCreators';
 
 class HomeScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      checkInputError: false,
+    };
+  }
+
+  tryCheck = sendActive => {
+    if (sendActive) {
+      this.props.dispatch(
+        postRepo(this.props.navigation.navigate('CompleteSendScreen')),
+      );
+    } else {
+      this.setState({
+        checkInputError: true,
+      });
+    }
+  };
+
   render() {
+    // vedo se l'utente è connesso
     const isNotConnected = !this.props.isConnected;
+    // vedo se posso mandare la post se sono connesso user e name
+    const sendActive =
+      this.props.userRepo.length &&
+      this.props.nameRepo.length &&
+      this.props.isConnected;
     return (
       <View
         style={[
           styles.body,
-          {backgroundColor: isNotConnected ? 'red' : 'white'},
+          {
+            backgroundColor:
+              isNotConnected || this.state.checkInputError
+                ? 'rgb(253,  172, 173)'
+                : sendActive
+                ? 'rgb(203, 254, 219 )'
+                : 'white',
+          },
         ]}>
         <StatusBar barStyle="dark-content" />
         <SafeAreaView style={styles.ScreenView}>
@@ -34,23 +67,39 @@ class HomeScreen extends React.Component {
             <Text style={styles.sectionTitle}>Set the repository address</Text>
             <Text style={styles.sectionDescription}>github.com</Text>
             <TouchableOpacity
-              onPress={() =>
+              onPress={() => {
+                this.setState({checkInputError: false});
                 this.props.navigation.navigate('InputScreen', {
                   typeInput: 'user',
-                })
-              }>
+                });
+              }}>
               <Text style={styles.sectionDescription}>
-                /{this.props.userRepo ? this.props.userRepo : 'user'}
+                /
+                {this.props.userRepo ? (
+                  <Text style={styles.sectionDescription}>
+                    {this.props.userRepo}
+                  </Text>
+                ) : (
+                  <Text style={styles.sectionGrayDescription}>user</Text>
+                )}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() =>
+              onPress={() => {
+                this.setState({checkInputError: false});
                 this.props.navigation.navigate('InputScreen', {
                   typeInput: 'repo',
-                })
-              }>
+                });
+              }}>
               <Text style={styles.sectionDescription}>
-                /{this.props.nameRepo ? this.props.nameRepo : 'repo'}
+                /
+                {this.props.nameRepo ? (
+                  <Text style={styles.sectionDescription}>
+                    {this.props.nameRepo}
+                  </Text>
+                ) : (
+                  <Text style={styles.sectionGrayDescription}>repo</Text>
+                )}
               </Text>
             </TouchableOpacity>
             {isNotConnected ? (
@@ -63,11 +112,29 @@ class HomeScreen extends React.Component {
             ) : (
               <></>
             )}
+            {this.state.checkInputError ? (
+              <View>
+                <Text style={styles.paddingText}>
+                  <Text style={styles.internetDescription}>Check your</Text>
+                  <Text style={styles.internetBoldDescription}> username</Text>
+                </Text>
+                <Text>
+                  <Text style={styles.internetDescription}>or your </Text>
+                  <Text style={styles.internetBoldDescription}>repository</Text>
+                  <Text style={styles.internetDescription}> name</Text>
+                </Text>
+              </View>
+            ) : (
+              <></>
+            )}
           </View>
           <View style={styles.sectionRightContainer}>
             <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('InputScreen')}>
-              <Text style={styles.sectionDescription}>CHECK</Text>
+              // disabled={!sendActive}
+              onPress={() => this.tryCheck(sendActive)}>
+              <Text style={styles.sectionDescription}>
+                {sendActive ? 'SEND' : 'CHECK'}
+              </Text>
             </TouchableOpacity>
           </View>
         </SafeAreaView>
@@ -102,41 +169,44 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sectionTitle: {
+    fontFamily: 'OpenSans-Regular',
     fontSize: 24,
     fontWeight: '600',
     color: 'black',
   },
   sectionDescription: {
     marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+    fontFamily: 'OpenSans-Regular',
+    fontSize: 30,
+    fontWeight: '600',
     color: 'black',
+  },
+  sectionGrayDescription: {
+    marginTop: 8,
+    fontFamily: 'OpenSans-Regular',
+    fontSize: 30,
+    fontWeight: '600',
+    color: 'gray',
   },
   paddingText: {
     marginTop: 8,
   },
   internetDescription: {
     marginTop: 8,
+    fontFamily: 'OpenSans-Regular',
     fontSize: 18,
     fontWeight: '400',
     color: 'black',
   },
   internetBoldDescription: {
     marginTop: 8,
+    fontFamily: 'OpenSans-Regular',
     fontSize: 18,
     fontWeight: '800',
     color: 'black',
   },
   highlight: {
     fontWeight: '700',
-  },
-  footer: {
-    color: 'black',
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
   },
 });
 

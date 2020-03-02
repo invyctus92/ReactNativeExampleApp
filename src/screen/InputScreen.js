@@ -26,6 +26,8 @@ class InputScreen extends React.Component {
   constructor(props) {
     super(props);
 
+    // vedo quale tipo di input devo gestire
+    // modifico la pagina di conseguenza
     const typeInput = this.props.route.params?.typeInput;
     let title = 'USER';
     if (typeInput == 'repo') {
@@ -41,6 +43,7 @@ class InputScreen extends React.Component {
   }
 
   goBackAndSaveInput = () => {
+    // salvo i dati inseriti in redux
     if (this.state.typeInput == 'repo') {
       store.dispatch(addRepoName(this.state.valueInput));
     } else {
@@ -129,6 +132,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     fontWeight: '400',
     textAlign: 'left',
+    fontFamily: 'OpenSans-Regular',
     fontSize: 16,
     width: Dimensions.get('window').width * 0.9,
     borderColor: 'black',
@@ -158,6 +162,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sectionTitle: {
+    fontFamily: 'OpenSans-Regular',
     fontSize: 24,
     padding: 16,
     fontWeight: '600',
@@ -165,20 +170,13 @@ const styles = StyleSheet.create({
   },
   sectionDescription: {
     marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+    fontFamily: 'OpenSans-Regular',
+    fontSize: 25,
+    fontWeight: '600',
     color: 'black',
   },
   highlight: {
     fontWeight: '700',
-  },
-  footer: {
-    color: 'black',
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
   },
 });
 

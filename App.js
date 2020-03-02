@@ -14,6 +14,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import HomeScreen from './src/screen/HomeScreen';
 import InputScreen from './src/screen/InputScreen';
+import CompleteSendScreen from './src/screen/CompleteSendScreen';
 
 import NetInfo from '@react-native-community/netinfo';
 import {changeConnectionStatus} from './src/domains/connection/ActionCreators';
@@ -54,6 +55,13 @@ export default class App extends React.Component {
             <Stack.Screen
               name="InputScreen"
               component={InputScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="CompleteSendScreen"
+              component={CompleteSendScreen}
               options={{
                 headerShown: false,
               }}

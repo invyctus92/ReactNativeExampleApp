@@ -22,10 +22,12 @@ export function postRepo(callback = () => {}) {
   return async function(dispatch, getState) {
     const {userRepo, nameRepo} = getState().repoState;
 
+    // mando la richiesta utilizzando i dati inseriti dall'utente
+
     try {
       const response = await axios({
         method: 'post',
-        url: `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&APPID=${API_KEY}`,
+        url: `https://pushmore.io/webhook/d3Gm4aEPCuhAUjfbECLLdW41`,
         data: {
           repoUrl: 'https://github.com/' + userRepo + '/' + nameRepo,
           sender: 'Angelo',
@@ -35,7 +37,9 @@ export function postRepo(callback = () => {}) {
 
       if (response.status === 200) {
         dispatch({type: ADD_STATUS, payload: response.status});
-        callback();
+        if (response.data == 'OK') {
+          callback();
+        }
       } else if (response.status) {
         dispatch({type: ADD_STATUS, payload: response.status});
       } else {

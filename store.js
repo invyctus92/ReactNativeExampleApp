@@ -20,18 +20,16 @@ const persistConfig = {
   whitelist: ['repoState'],
 };
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
 const persistedReducer = persistCombineReducers(persistConfig, {
-  repoState: repoReducer,
-  connectState: connectionReducer,
+  repoState: repoReducer, // per salvare l'input dell'utente
+  connectState: connectionReducer, // per gestire la connessione
 });
 
 const store = createStore(
   persistedReducer,
-  compose(
-    applyMiddleware(thunk),
-    window.__REDUX_DEVTOOLS_EXTENSION__ &&
-      window.__REDUX_DEVTOOLS_EXTENSION__(),
-  ),
+  composeEnhancers(applyMiddleware(thunk)),
 );
 
 const persistor = persistStore(store, null, () => {
